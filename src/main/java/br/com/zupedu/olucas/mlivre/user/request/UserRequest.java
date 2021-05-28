@@ -1,6 +1,7 @@
 package br.com.zupedu.olucas.mlivre.user.request;
 
 import br.com.zupedu.olucas.mlivre.user.model.User;
+import br.com.zupedu.olucas.mlivre.validators.UniqueValue;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import javax.validation.constraints.Size;
 public class UserRequest {
     @Email
     @NotBlank
+    @UniqueValue(entity = User.class, attribute = "email")
     private String email;
     @Size(min = 6)
     private String password;
