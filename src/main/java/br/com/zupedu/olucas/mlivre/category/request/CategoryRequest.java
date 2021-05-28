@@ -1,6 +1,7 @@
 package br.com.zupedu.olucas.mlivre.category.request;
 
 import br.com.zupedu.olucas.mlivre.category.model.Category;
+import br.com.zupedu.olucas.mlivre.validators.Exists;
 import br.com.zupedu.olucas.mlivre.validators.UniqueValue;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
@@ -14,6 +15,7 @@ public class CategoryRequest {
     private String name;
 
     @Positive
+    @Exists(entity = Category.class)
     private Long categoryMotherId;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
