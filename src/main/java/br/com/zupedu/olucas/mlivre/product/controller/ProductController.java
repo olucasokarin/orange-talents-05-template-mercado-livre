@@ -4,17 +4,22 @@ import br.com.zupedu.olucas.mlivre.category.model.Category;
 import br.com.zupedu.olucas.mlivre.category.repository.CategoryRepository;
 import br.com.zupedu.olucas.mlivre.product.model.Product;
 import br.com.zupedu.olucas.mlivre.product.repository.ProductRepository;
+import br.com.zupedu.olucas.mlivre.product.request.ProductImageRequest;
 import br.com.zupedu.olucas.mlivre.product.request.ProductRequest;
+import br.com.zupedu.olucas.mlivre.product.utils.UploaderFake;
 import br.com.zupedu.olucas.mlivre.product.validators.ValidateUniqueCharacteristic;
 import br.com.zupedu.olucas.mlivre.user.model.User;
 import br.com.zupedu.olucas.mlivre.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/products")
@@ -27,6 +32,9 @@ public class ProductController {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @Autowired
+    UploaderFake uploaderFake;
+
     @PostMapping
     public ResponseEntity createProduct(@RequestBody @Valid ProductRequest productRequest,
                                         Principal principal) {
@@ -37,7 +45,24 @@ public class ProductController {
         return ResponseEntity.ok().build();
     }
 
-    @InitBinder
+    @PatchMapping("/{id}/images")
+    public ResponseEntity updateImageProduct(@PathVariable("id") Long id,
+                                             @Valid ProductImageRequest imageRequest,
+                                             Principal principal) {
+        User user = userRepository.findByEmail(principal.getName());
+        Product product = productRepository.findById(id).get();
+
+        if(!product.belongToTheOwner(user))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        Set<String> links = uploaderFake.send(imageRequest.getImages());
+        product.associateLinks(links);
+        productRepository.save(product);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @InitBinder(value = "ProductRequest")
     public void init(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(new ValidateUniqueCharacteristic());
     }

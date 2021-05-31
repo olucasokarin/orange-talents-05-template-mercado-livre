@@ -41,13 +41,14 @@ public class Product {
     @NotNull
     @ManyToOne
     private User user;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ImageProduct> images;
     @CreatedDate
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Deprecated
     public Product() {
     }
-
 
     public Product(String name, BigDecimal amount, Integer quantity,
                    List<CharacteristicRequest> characteristics, String description,
@@ -64,4 +65,16 @@ public class Product {
                 .collect(Collectors.toSet());
         this.characteristics.addAll(characteristicSet);
     }
+
+    public void associateLinks(Set<String> links) {
+        Set<ImageProduct> images = links.stream()
+                .map(link -> new ImageProduct(link, this))
+                .collect(Collectors.toSet());
+        this.images.addAll(images);
+    }
+
+    public boolean belongToTheOwner(User confirmUser){
+        return this.user.equals(confirmUser);
+    }
+
 }
