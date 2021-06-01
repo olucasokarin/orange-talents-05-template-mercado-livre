@@ -26,4 +26,16 @@ public class Characteristic {
         this.description = description;
         this.product = product;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

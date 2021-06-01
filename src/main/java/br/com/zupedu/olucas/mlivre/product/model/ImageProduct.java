@@ -40,4 +40,12 @@ public class ImageProduct {
     public int hashCode() {
         return Objects.hash(product, url);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getUrl() {
+        return url;
+    }
 }

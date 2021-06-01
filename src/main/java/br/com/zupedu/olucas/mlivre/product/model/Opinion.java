@@ -41,4 +41,25 @@ public class Opinion {
         this.user = user;
         this.product = product;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Integer getGrade() {
+        return grade;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getUsernameFromUser(){
+        return user.getEmail();
+    }
+
 }

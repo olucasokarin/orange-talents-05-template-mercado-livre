@@ -10,6 +10,7 @@ import br.com.zupedu.olucas.mlivre.product.request.OpinionRequest;
 import br.com.zupedu.olucas.mlivre.product.request.ProductImageRequest;
 import br.com.zupedu.olucas.mlivre.product.request.ProductRequest;
 import br.com.zupedu.olucas.mlivre.product.request.QuestionRequest;
+import br.com.zupedu.olucas.mlivre.product.response.ProductResponse;
 import br.com.zupedu.olucas.mlivre.product.utils.Emails;
 import br.com.zupedu.olucas.mlivre.product.utils.UploaderFake;
 import br.com.zupedu.olucas.mlivre.product.validators.ValidateUniqueCharacteristic;
@@ -106,6 +107,17 @@ public class ProductController {
         emails.newQuestion(question);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> getProductDetail(@PathVariable("id") Long id) {
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        if(optionalProduct.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+        Product product = optionalProduct.get();
+
+        ProductResponse productResponse = new ProductResponse(product);
+        return ResponseEntity.ok(productResponse);
     }
 
     @InitBinder(value = "ProductRequest")

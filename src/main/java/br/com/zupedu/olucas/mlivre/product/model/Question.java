@@ -42,4 +42,12 @@ public class Question {
     public String getUsernameFromProduct() {
         return this.product.getUsernameFromProduct();
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 }

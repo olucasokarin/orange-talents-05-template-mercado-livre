@@ -11,9 +11,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -92,5 +90,45 @@ public class Product {
 
     public String getUsernameFromProduct() {
         return this.user.getEmail();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public Set<Characteristic> getCharacteristics() {
+        return Collections.unmodifiableSet(characteristics);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public List<ImageProduct> getImages() {
+        return Collections.unmodifiableList(images);
+    }
+
+    public List<Opinion> getOpinions() {
+        return Collections.unmodifiableList(opinions);
+    }
+
+    public List<Question> getQuestions() {
+        return Collections.unmodifiableList(questions);
     }
 }
