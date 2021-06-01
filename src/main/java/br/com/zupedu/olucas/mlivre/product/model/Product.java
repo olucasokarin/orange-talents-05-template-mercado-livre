@@ -45,6 +45,9 @@ public class Product {
     private List<ImageProduct> images;
     @OneToMany(mappedBy = "product", cascade = CascadeType.MERGE)
     private List<Opinion> opinions;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.MERGE)
+    private List<Question> questions;
+
     @CreatedDate
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -81,5 +84,13 @@ public class Product {
 
     public void associateOpinion(Opinion opinion) {
         this.opinions.add(opinion);
+    }
+
+    public void addQuestionToProduct(Question question) {
+        this.questions.add(question);
+    }
+
+    public String getUsernameFromProduct() {
+        return this.user.getEmail();
     }
 }

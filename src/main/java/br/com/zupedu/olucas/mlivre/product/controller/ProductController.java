@@ -4,10 +4,13 @@ import br.com.zupedu.olucas.mlivre.category.model.Category;
 import br.com.zupedu.olucas.mlivre.category.repository.CategoryRepository;
 import br.com.zupedu.olucas.mlivre.product.model.Opinion;
 import br.com.zupedu.olucas.mlivre.product.model.Product;
+import br.com.zupedu.olucas.mlivre.product.model.Question;
 import br.com.zupedu.olucas.mlivre.product.repository.ProductRepository;
 import br.com.zupedu.olucas.mlivre.product.request.OpinionRequest;
 import br.com.zupedu.olucas.mlivre.product.request.ProductImageRequest;
 import br.com.zupedu.olucas.mlivre.product.request.ProductRequest;
+import br.com.zupedu.olucas.mlivre.product.request.QuestionRequest;
+import br.com.zupedu.olucas.mlivre.product.utils.Emails;
 import br.com.zupedu.olucas.mlivre.product.utils.UploaderFake;
 import br.com.zupedu.olucas.mlivre.product.validators.ValidateUniqueCharacteristic;
 import br.com.zupedu.olucas.mlivre.user.model.User;
@@ -37,6 +40,8 @@ public class ProductController {
 
     @Autowired
     UploaderFake uploaderFake;
+    @Autowired
+    Emails emails;
 
     @PostMapping
     public ResponseEntity createProduct(@RequestBody @Valid ProductRequest productRequest,
@@ -79,6 +84,26 @@ public class ProductController {
         Opinion opinion = opinionRequest.convertRequestToEntity(user, product);
         product.associateOpinion(opinion);
         productRepository.save(product);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/questions")
+    public ResponseEntity sendQuestion(@PathVariable("id") Long id,
+                                       @RequestBody @Valid QuestionRequest questionRequest,
+                                       Principal principal) {
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        if(optionalProduct.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+
+        Product product = optionalProduct.get();
+        User user = userRepository.findByEmail(principal.getName());
+
+        Question question = questionRequest.convertRequestToEntity(product, user);
+        product.addQuestionToProduct(question);
+
+        productRepository.save(product);
+        emails.newQuestion(question);
 
         return ResponseEntity.ok().build();
     }
