@@ -2,8 +2,10 @@ package br.com.zupedu.olucas.mlivre.product.controller;
 
 import br.com.zupedu.olucas.mlivre.category.model.Category;
 import br.com.zupedu.olucas.mlivre.category.repository.CategoryRepository;
+import br.com.zupedu.olucas.mlivre.product.model.Opinion;
 import br.com.zupedu.olucas.mlivre.product.model.Product;
 import br.com.zupedu.olucas.mlivre.product.repository.ProductRepository;
+import br.com.zupedu.olucas.mlivre.product.request.OpinionRequest;
 import br.com.zupedu.olucas.mlivre.product.request.ProductImageRequest;
 import br.com.zupedu.olucas.mlivre.product.request.ProductRequest;
 import br.com.zupedu.olucas.mlivre.product.utils.UploaderFake;
@@ -19,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -57,6 +60,24 @@ public class ProductController {
 
         Set<String> links = uploaderFake.send(imageRequest.getImages());
         product.associateLinks(links);
+        productRepository.save(product);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/opinions")
+    public ResponseEntity<?> sendOpinion(@PathVariable("id") Long id,
+                                         @RequestBody @Valid OpinionRequest opinionRequest,
+                                         Principal principal) {
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        if(optionalProduct.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+
+        Product product = optionalProduct.get();
+        User user = userRepository.findByEmail(principal.getName());
+
+        Opinion opinion = opinionRequest.convertRequestToEntity(user, product);
+        product.associateOpinion(opinion);
         productRepository.save(product);
 
         return ResponseEntity.ok().build();

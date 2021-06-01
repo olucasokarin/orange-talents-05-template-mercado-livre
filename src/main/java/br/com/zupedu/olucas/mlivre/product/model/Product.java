@@ -43,6 +43,8 @@ public class Product {
     private User user;
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ImageProduct> images;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.MERGE)
+    private List<Opinion> opinions;
     @CreatedDate
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -77,4 +79,7 @@ public class Product {
         return this.user.equals(confirmUser);
     }
 
+    public void associateOpinion(Opinion opinion) {
+        this.opinions.add(opinion);
+    }
 }
